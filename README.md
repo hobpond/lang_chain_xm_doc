@@ -31,3 +31,6 @@ pip install -r requirements.txt
 ``` bash
 python src/openai_qa.py
 ```
+
+### Notes
+Based on examples from Sam Witteveen youtube videos

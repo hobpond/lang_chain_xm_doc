@@ -31,7 +31,7 @@ pip install -r requirements.txt
 
 ### Usage
 ``` bash
-python src/openai_url_qa.py
+python src/openai_dir_qa.py
 ```
 
 ### Test prompt
@@ -45,58 +45,37 @@ their name and their time zone?
 ### Sample output
 Sure, here's an example script that should do what you're asking for:
 
-```
+```python
 import requests
+from requests.auth import HTTPBasicAuth
 import json
 
-# Set up the API request
-base_url = "https://acmeco.xmatters.com/api/xm/1"
-group_id = "your_group_id_here"
-endpoint_url = f"/groups/{group_id}/on-call"
-url = base_url + endpoint_url
-auth = requests.auth.HTTPBasicAuth("your_username_here", "your_password_here")
-headers = {"Content-Type": "application/json"}
+base_URL = "https://acmeco.xmatters.com/api/xm/1"
+group_id = "954ada78-7b89-4356-b02c-df85ff30dfd2"
 
-# Make the API request
-response = requests.get(url, auth=auth, headers=headers)
+# Make the API request to get the on-call details for the group
+response = requests.get(f"{base_URL}/on-call?groups={group_id}", auth=HTTPBasicAuth("username", "password"))
 
-# Parse the response JSON
-response_json = json.loads(response.text)
+# Output the result as a map
+result = {
+    "Group": group_id,
+    "Person": person
+}
 
-# Find the first primary on-call person and get their time zone
-primary_on_call = None
-for member in response_json["data"]:
-    if member["onCall"]["priority"] == "PRIMARY":
-        primary_on_call = member
-        break
-
-if primary_on_call is None:
-    print("No primary on-call person found.")
-else:
-    # Build the output map
-    output_map = {
-        "group": group_id,
-        "person": {
-            "id": primary_on_call["recipient"]["id"],
-            "name": primary_on_call["recipient"]["targetName"],
-            "time_zone": primary_on_call["timeZone"]
-        }
-    }
-
-    # Print the output map
-    print(output_map)
+print(result)
 ```
 
-Replace "your_group_id_here", "your_username_here", and "your_password_here" with the appropriate values for your
-xMatters instance. When you run the script, it should output a map with the group ID and the details of the first
-primary on-call person, including their ID, name, and time zone.
+
+Make sure to replace "username" and "password" with your actual xMatters credentials, and
+"954ada78-7b89-4356-b02c-df85ff30dfd2" with the ID of the group you want to get the on-call details for.
 
 
 Sources:
-https://help.xmatters.com/xmapi/index.html#xmatters-rest-api
-https://help.xmatters.com/xmapi/index.html#xmatters-rest-api
-https://help.xmatters.com/xmapi/index.html#xmatters-rest-api
-https://help.xmatters.com/xmapi/index.html#xmatters-rest-api
+d:\work\lang_chain_xm_doc\src\help-docs\endpoints\on-call\_get-on-call.md
+d:\work\lang_chain_xm_doc\src\help-docs\endpoints\on-call-summary\_get-on-call-summary.md
+d:\work\lang_chain_xm_doc\src\help-docs\endpoints\group-roster\_get-group-roster.md
+d:\work\lang_chain_xm_doc\src\help-docs\endpoints\shifts\_get-shift-member.md
 
 ### Notes
 Based on examples from Sam Witteveen youtube videos
+https://youtu.be/KUDn7bVyIfc

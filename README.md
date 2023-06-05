@@ -43,31 +43,49 @@ their name and their time zone?
 ```
 
 ### Sample output
-Sure, here's an example script that should do what you're asking for:
+Sure, here's an example Python script that should do what you're asking for:
 
 ```python
 import requests
 from requests.auth import HTTPBasicAuth
 import json
 
+# Set up the xMatters API endpoint and credentials
 base_URL = "https://acmeco.xmatters.com/api/xm/1"
-group_id = "954ada78-7b89-4356-b02c-df85ff30dfd2"
+username = "your_username"
+password = "your_password"
 
-# Make the API request to get the on-call details for the group
-response = requests.get(f"{base_URL}/on-call?groups={group_id}", auth=HTTPBasicAuth("username", "password"))
+# Set up the group ID for the group you want to get on-call details for
+group_id = "your_group_id"
 
-# Output the result as a map
-result = {
-    "Group": group_id,
-    "Person": person
-}
+# Make the API call to get the on-call details for the group
+response = requests.get(f"{base_URL}/on-call-summary?groups={group_id}", auth=HTTPBasicAuth(username, password))
 
+# Parse the response JSON and find the first primary on-call person
+on_call_data = json.loads(response.text)
+primary_on_call = None
+for recipient in on_call_data:
+    if recipient["shift"]["name"] == "Primary":
+        primary_on_call = recipient
+        break
+
+# If we found a primary on-call person, create a Person object with their details
+if primary_on_call:
+    person = {
+        "id": primary_on_call["recipient"]["id"],
+        "name": primary_on_call["recipient"]["targetName"],
+        "time_zone": primary_on_call["recipient"]["timeZone"]
+    }
+else:
+    person = None
+
+# Output the result as a map with the group ID as the key and the Person object as the value
+result = {group_id: person}
 print(result)
 ```
 
-
-Make sure to replace "username" and "password" with your actual xMatters credentials, and
-"954ada78-7b89-4356-b02c-df85ff30dfd2" with the ID of the group you want to get the on-call details for.
+You'll need to replace the `base_URL`, `username`, `password`, and `group_id` variables with the appropriate values for
+your xMatters instance and the group you want to get on-call details for. Let me know if you have any questions!
 
 
 Sources:

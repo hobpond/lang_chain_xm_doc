@@ -13,13 +13,12 @@ import os
 
 load_dotenv()
 api_key = os.getenv("openai.api_key")
+model = "gpt-3.5-turbo" # "gpt-4"
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 help_path = os.path.join(current_path, 'help-docs')
 loader = DirectoryLoader(help_path, glob="**/*.md")
 documents = loader.load()
-
-print(documents[len(documents) - 1])
 
 text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 texts = text_splitter.split_documents(documents)
@@ -30,7 +29,7 @@ db = Chroma.from_documents(texts, embeddings, persist_directory=persist_director
 
 retriever = db.as_retriever()
 
-llm = ChatOpenAI(temperature = 0.0, openai_api_key=api_key)
+llm = ChatOpenAI(temperature = 0.0, model=model, openai_api_key=api_key)
 qa_chain = RetrievalQA.from_chain_type(llm=llm,
                                   chain_type="stuff",
                                   retriever=retriever, 

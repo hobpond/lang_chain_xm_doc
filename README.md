@@ -36,87 +36,67 @@ python src/openai_url_qa.py
 
 ### Test prompt
 ```
-Can you help me write a python script that goes through a list of Groups and find the first primary OnCall person,
-note down their TimeZone and then output the result as a map where the key is a Group and the vlaue is a 
-Person object that has the per id, their name and their time zone?"
+Can you help me write a python script that gets the on-call details of a group in xMatters.
+Finding the first Primary on-call person, note down their TimeZone and then output the result 
+as a map where the key is a Group and the vlaue is a Person object that has the per id,
+their name and their time zone?
 ```
 
 ### Sample output
-Yes, I can help you with that. Here's an example script that should accomplish what you're looking for:
+Sure, here's an example script that should do what you're asking for:
 
-``` python
+```
 import requests
 import json
 
-# Define the base URL and authentication credentials
+# Set up the API request
 base_url = "https://acmeco.xmatters.com/api/xm/1"
-auth = ("username", "password")
+group_id = "your_group_id_here"
+endpoint_url = f"/groups/{group_id}/on-call"
+url = base_url + endpoint_url
+auth = requests.auth.HTTPBasicAuth("your_username_here", "your_password_here")
+headers = {"Content-Type": "application/json"}
 
-# Define a function to get the primary on-call person for a group
-def get_primary_oncall_person(group_id):
-    # Build the URL for the group endpoint
-    url = f"{base_url}/groups/{group_id}/memberships"
+# Make the API request
+response = requests.get(url, auth=auth, headers=headers)
 
-    # Send a GET request to the group endpoint
-    response = requests.get(url, auth=auth)
+# Parse the response JSON
+response_json = json.loads(response.text)
 
-    # Parse the response JSON
-    memberships = json.loads(response.text)
+# Find the first primary on-call person and get their time zone
+primary_on_call = None
+for member in response_json["data"]:
+    if member["onCall"]["priority"] == "PRIMARY":
+        primary_on_call = member
+        break
 
-    # Loop through the memberships to find the primary on-call person
-    for membership in memberships:
-        if membership["role"] == "PRIMARY":
-            # Build the URL for the person endpoint
-            url = f"{base_url}/people/{membership['person']['id']}"
-
-            # Send a GET request to the person endpoint
-            response = requests.get(url, auth=auth)
-
-            # Parse the response JSON
-            person = json.loads(response.text)
-
-            # Return the person object
-            return person
-
-    # If no primary on-call person was found, return None
-    return None
-
-# Define a list of group IDs to check
-group_ids = ["group1", "group2", "group3"]
-
-# Define a dictionary to store the results
-results = {}
-
-# Loop through the group IDs and get the primary on-call person for each group
-for group_id in group_ids:
-    person = get_primary_oncall_person(group_id)
-    if person is not None:
-        # Add the person object to the results dictionary
-        results[group_id] = {
-            "id": person["id"],
-            "name": person["targetName"],
-            "timezone": person["timezone"]
+if primary_on_call is None:
+    print("No primary on-call person found.")
+else:
+    # Build the output map
+    output_map = {
+        "group": group_id,
+        "person": {
+            "id": primary_on_call["recipient"]["id"],
+            "name": primary_on_call["recipient"]["targetName"],
+            "time_zone": primary_on_call["timeZone"]
         }
+    }
 
-# Print the results
-print(json.dumps(results, indent=4))
+    # Print the output map
+    print(output_map)
 ```
 
-This script defines a function `get_primary_oncall_person` that takes a group ID as input and returns the primary on-
-call person for that group. It then loops through a list of group IDs, calls this function for each group, and stores
-the results in a dictionary. Finally, it prints the results as a JSON-formatted string.
-
-Note that you'll need to replace the `base_url` and `auth` variables with the appropriate values for your xMatters
-instance, and you'll need to replace the `group_ids` list with the IDs of the groups you want to check.
+Replace "your_group_id_here", "your_username_here", and "your_password_here" with the appropriate values for your
+xMatters instance. When you run the script, it should output a map with the group ID and the details of the first
+primary on-call person, including their ID, name, and time zone.
 
 
 Sources:
 https://help.xmatters.com/xmapi/index.html#xmatters-rest-api
 https://help.xmatters.com/xmapi/index.html#xmatters-rest-api
 https://help.xmatters.com/xmapi/index.html#xmatters-rest-api
-https://help.xmatters.com/xmapi/index.html#xmatters-rest-api 
-
+https://help.xmatters.com/xmapi/index.html#xmatters-rest-api
 
 ### Notes
 Based on examples from Sam Witteveen youtube videos
-

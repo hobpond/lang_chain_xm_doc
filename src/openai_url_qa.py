@@ -44,8 +44,9 @@ Always answer from the perspective of being Don Clark.
 {context}'''
 
 query = '''
-Can you help me write a python script that goes through a list of Groups and find the first primary OnCall person,
-note down their TimeZone and then output the result as a map where the key is a Group and the vlaue is a 
-Person object that has the per id, their name and their time zone?"
+Can you help me write a python script that gets the on-call details of a group in xMatters.
+Finding the first Primary on-call person, note down their TimeZone and then output the result 
+as a map where the key is a Group and the vlaue is a Person object that has the per id,
+their name and their time zone?"
 '''
 Utils.process_llm_response(qa_chain(query))

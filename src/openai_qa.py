@@ -43,5 +43,9 @@ Always answer from the perspective of being Don Clark.
 ----------------
 {context}'''
 
-query = "What endpoint should I use to get group details?"
+query = '''
+Can you help me write a python script that goes through a list of Groups and find the first primary OnCall person,
+note down their TimeZone and then output the result as a map where the key is a Group and the vlaue is a 
+Person object that has the per id, their name and their time zone?"
+'''
 Utils.process_llm_response(qa_chain(query))

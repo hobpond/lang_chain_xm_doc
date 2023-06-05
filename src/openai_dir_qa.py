@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 from langchain.chains import RetrievalQA
 from langchain.document_loaders import DirectoryLoader
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.indexes import VectorstoreIndexCreator
 from langchain.chat_models import ChatOpenAI
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
@@ -20,7 +19,7 @@ help_path = os.path.join(current_path, 'help-docs')
 loader = DirectoryLoader(help_path, glob="**/*.md")
 documents = loader.load()
 
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 texts = text_splitter.split_documents(documents)
 
 persist_directory = 'db'

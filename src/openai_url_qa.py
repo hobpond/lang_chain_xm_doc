@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 from langchain.chains import RetrievalQA
 from langchain.document_loaders import UnstructuredURLLoader
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.indexes import VectorstoreIndexCreator
 from langchain.chat_models import ChatOpenAI
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma

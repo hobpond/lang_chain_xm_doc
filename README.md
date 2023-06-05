@@ -1,13 +1,12 @@
 # lang_chain_xm_doc
 
-This project aims to create a Python program that takes the XMatters API documentation and feeds it to the OpenAI GPT-3 API. The purpose is to create an AI model that has in-depth knowledge about XMatters API and can assist developers in working with XMatters APIs more efficiently.
+This project aims to create a Python program that uses langchain and takes the XMatters API documentation and feeds it to the OpenAI GPT-3 API. The purpose is to create an AI model that has in-depth knowledge about XMatters API and can assist developers in working with XMatters APIs more efficiently.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- An XMatters account
+- Python 3.10
 - An OpenAI API key
 
 ### Installing
@@ -25,10 +24,10 @@ pip install -r requirements.txt
 ```
 
 ### Environment Variables
-* OPENAI_KEY: Your OpenAI API key
-
-You can set these environment variables in your terminal or add them to a .env file in the project root directory.
+* Make a copy of the .env_template into a file namd .env
+* Enter your openai key
 
 ### Usage
-python main.py
-
+``` bash
+python src/openai_qa.py
+```

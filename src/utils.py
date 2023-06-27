@@ -1,3 +1,4 @@
+from langchain.callbacks import get_openai_callback
 import textwrap
 
 class Utils:
@@ -15,7 +16,14 @@ class Utils:
         return wrapped_text
 
     def process_llm_response(llm_response):
+        # print(llm_response)
         print(Utils.wrap_text_preserve_newlines(llm_response['result']))
         print('\n\nSources:')
         for source in llm_response["source_documents"]:
             print(source.metadata['source'])
+
+    def count_tokens(chain, query):
+        with get_openai_callback() as cb:
+            result = chain(query)
+            print(f'Spent a total of {cb.total_tokens} tokens')
+        return result

@@ -13,6 +13,7 @@ import os
 
 load_dotenv()
 api_key = os.getenv("openai.api_key")
+MODEL = "gpt-3.5-turbo-0613"
 
 urls = [
     "https://help.xmatters.com/ondemand/userguide/roles/user.htm",
@@ -39,6 +40,7 @@ urls = [
     "https://help.xmatters.com/ondemand/userguide/users/userspage.htm",
     "https://help.xmatters.com/ondemand/userguide/roles/supervisor.htm",
     "https://help.xmatters.com/ondemand/groups/manage_dynamic_teams.htm",
+    "https://help.xmatters.com/ondemand/groups/dynamic-team-details.htm",
     "https://help.xmatters.com/ondemand/userguide/receivingalerts/subscriptions/sharingsubscriptions.htm",
     "https://help.xmatters.com/ondemand/userguide/performance/recipientperformance.htm",
     "https://help.xmatters.com/ondemand/incidentmgmt/incident-management.htm",
@@ -86,19 +88,18 @@ urls = [
 loader = UnstructuredURLLoader(urls=urls)
 documents = loader.load()
 
-text_splitter = CharacterTextSplitter(chunk_size=4000, chunk_overlap=0)
+text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
 texts = text_splitter.split_documents(documents)
 
-persist_directory = 'db'
-embeddings = OpenAIEmbeddings(openai_api_key=api_key)
-db = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory)
+embeddings = OpenAIEmbeddings(model=MODEL, openai_api_key=api_key)
+db = Chroma.from_documents(texts, embeddings)
 
 retriever = db.as_retriever()
 
-llm = ChatOpenAI(model = "gpt-3.5-turbo-0613", temperature = 0.0, openai_api_key=api_key)
+llm = ChatOpenAI(model = MODEL, temperature = 0.0, openai_api_key=api_key, max_tokens=1000)
 
 prompt_template = '''
-Your name is Don Clark. You are an expert at using xMatters.
+Your name is Don Clark. You are an expert at using xMatters and is extremely helpful.
 Use the following pieces of context to answer the users question. 
 If you don't know the answer, just say that you don't know, don't try to make up an answer.
 Always answer from the perspective of being Don Clark.
